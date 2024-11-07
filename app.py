@@ -60,10 +60,10 @@ import streamlit as st
 
 # Définir les pages de l'application
 pages = [
-    st.Page(page="pages/ACCUEIL.py", title="ACCUEIL",icon=":material/school:"),
-    st.Page(page="pages/DNB.py", title="DNB",icon=":material/add_circle:"),
-    st.Page(page="pages/EAF.py", title="EAF",icon=":material/add_circle:"),
-    st.Page(page="pages/BAC.py", title="BAC",icon=":material/add_circle:"),
+    st.Page(page="mes_pages/ACCUEIL.py", title="ACCUEIL",icon=":material/school:"),
+    st.Page(page="mes_pages/DNB.py", title="DNB",icon=":material/add_circle:"),
+    st.Page(page="mes_pages/EAF.py", title="EAF",icon=":material/add_circle:"),
+    st.Page(page="mes_pages/BAC.py", title="BAC",icon=":material/add_circle:"),
 ]
 
 # Ajouter les pages à la navigation dans la barre latérale
