@@ -1,86 +1,21 @@
-import pandas as pd
 import streamlit as st
-import locale
 
-# Initialiser la locale pour gérer le format des nombres
-locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Ajustez en fonction de votre locale
+# Configuration de la mise en page
+st.set_page_config(layout="wide")
 
-# Récupérer l'ID du fichier Google Sheets depuis le fichier secrets.toml
-file_id = st.secrets["google_sheets"]["file_id"]
+# Titre de l'application
+st.title("Analyse des Résultats des Épreuves - EFE Maroc")
 
-# Fonction pour transformer les colonnes d'un DataFrame
-def format_dataframe(df):
+# Introduction
+st.markdown("""
+Bienvenue sur l'application d'analyse des résultats des épreuves du Baccalauréat et du Diplôme National du Brevet (DNB) pour les établissements EFE Maroc.
+Cette interface vous permet de naviguer et d'explorer les données de performance des élèves par épreuve, par spécialité, et par établissement pour les années 2023 et 2024.
 
-    # Supprimer les virgules de la colonne 'session' en forçant le type en str, puis convertir en années (int)
-    if 'session' in df.columns:
-        df['session'] = df['session'].astype(str).str.replace(',', '').astype(int)
+Chaque section présente des graphiques interactifs et des classements qui permettent de visualiser les moyennes des différents établissements, ainsi que les variations d'une année à l'autre. Vous pouvez également mettre en surbrillance un établissement de votre choix pour comparer ses résultats aux autres établissements dans des épreuves spécifiques. En plus, une analyse des corrélations entre les épreuves est disponible, vous offrant un aperçu des tendances et des performances comparatives des élèves.
 
-    # Convertir la colonne 'etablissements' en chaîne de caractères (str)
-    if 'établissements' in df.columns:
-        df['établissement'] = df['établissement'].astype(str)
+Explorez les différents onglets et visualisations pour découvrir en détail les résultats académiques de chaque épreuve, et n'hésitez pas à utiliser les options de filtrage pour personnaliser votre analyse.
+""")
 
-    # Convertir toutes les autres colonnes en float si possible
-    for col in df.columns:
-        if col not in ['session', 'établissement','spécialité']:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
+st.write('**Bonne navigation !**')
 
-    return df
-
-# Fonction pour formater les données pour l'affichage sans séparateurs de milliers
-def format_for_display(df):
-    df_display = df.copy()
-    if 'session' in df_display.columns:
-        # Convertir les valeurs en chaînes sans séparateurs de milliers pour l'affichage
-        df_display['session'] = df_display['session'].apply(lambda x: locale.format_string('%.0f', x, grouping=False))
-    return df_display
-
-def display():
-    st.title("Bonjour")
-    st.write("Bienvenue à l'accueil !")
-
-    try:
-        # Dictionnaire des onglets avec leurs gIDs
-        sheets = {
-            "eds": "455744397",
-            "philosophie": "776936543",
-            "eaf": "1206285985",
-            "dnb": "1644783757",
-            "go": "1814626375"
-        }
-
-        # Charger chaque onglet dans un DataFrame et appliquer la fonction de formatage
-        dataframes = {}
-        for sheet_name, gid in sheets.items():
-            url = f"https://docs.google.com/spreadsheets/d/{file_id}/export?format=csv&gid={gid}"
-            df = pd.read_csv(url)
-
-            # Appliquer la fonction de formatage
-            df = format_dataframe(df)
-            dataframes[sheet_name] = df
-
-            # Appliquer un formatage pour l'affichage sans séparateurs de milliers
-            df_display = format_for_display(df)
-
-            st.write(f"Données transformées de l'onglet '{sheet_name}':")
-            st.dataframe(df_display)
-
-    except Exception as e:
-        st.error("Erreur lors du chargement des données.")
-        st.text(str(e))
-
-    return dataframes
-
-# Exécuter la page principale et obtenir le dictionnaire de DataFrames
-dataframes = display()
-
-# Stocker les DataFrames dans st.session_state pour les rendre accessibles ailleurs
-st.session_state['philosophie'] = dataframes['philosophie']
-st.session_state['eds'] = dataframes['eds']
-st.session_state['go'] = dataframes['go']
-st.session_state['dnb'] = dataframes['dnb']
-st.session_state['eaf'] = dataframes['eaf']
-
-
-# Exemple d'utilisation des DataFrames en dehors de la fonction display()
-st.write("Exemple de DataFrame 'eds' après transformation, prêt pour les opérations :")
-st.dataframe(dataframes["eds"])  # Utilisez dataframes['eds'] pour effectuer des calculs ou autres opérations
+st.divider()
